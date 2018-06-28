@@ -1,1 +1,2 @@
 autograd>=1.2
+cupy>=4.0
