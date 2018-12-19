@@ -1,0 +1,13 @@
+name: autograd-cupy-dev
+channels:
+- defaults
+- conda-forge
+- ericmjl
+dependencies:
+- python=3.7
+- jupyter
+- jupyterlab
+- conda
+- autograd
+- pip:
+  - cupy
