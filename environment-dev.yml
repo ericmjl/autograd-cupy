@@ -9,5 +9,8 @@ dependencies:
 - jupyterlab
 - conda
 - autograd
+- pytest
+- pycodestyle
+- mypy
 - pip:
   - cupy
