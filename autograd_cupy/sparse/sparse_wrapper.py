@@ -2,6 +2,7 @@ import cupy.sparse as _sp
 from autograd.extend import primitive
 import cupy as _cp
 
+
 # ----- definition for coo_matrix ----- #
 def coo_matrix(arg1, *args, **kwargs):
     return sparse_matrix_from_args("coo", arg1, *args, **kwargs)
