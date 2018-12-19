@@ -1,4 +1,4 @@
-import autograd.cupy as cp
+import autograd_cupy as cp
 from autograd import elementwise_grad as egrad
 import pytest
 from autograd import grad

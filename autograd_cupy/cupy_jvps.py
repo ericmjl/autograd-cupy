@@ -13,7 +13,7 @@ from .cupy_vjps import (
 from autograd.extend import (
     defjvp, defjvp_argnum, def_linear, vspace, JVPNode, register_notrace
 )
-from ..util import func
+from autograd.util import func
 from .cupy_boxes import ArrayBox
 
 for fun in nograd_functions:

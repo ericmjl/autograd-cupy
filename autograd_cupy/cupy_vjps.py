@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from future.utils import string_types
 from functools import partial
 import cupy as ocp
-from ..util import func
+from autograd.util import func
 from . import cupy_wrapper as acp
 from .cupy_boxes import ArrayBox
 from autograd.extend import (

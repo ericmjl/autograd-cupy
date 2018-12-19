@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 import warnings
 
-import autograd.cupy as cp
-import autograd.cupy.random as cpr
+import autograd_cupy as cp
+import autograd_cupy.random as cpr
 from autograd.test_util import check_grads
 from autograd import grad
 import pytest

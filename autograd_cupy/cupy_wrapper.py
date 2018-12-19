@@ -72,7 +72,8 @@ def wrap_namespace(old, new):
         #
         elif (type(obj) in function_types
               or isinstance(obj, _cp.ufunc)
-              or isinstance(obj, _cp.core.fusion.reduction)):
+              #or isinstance(obj, _cp.core.fusion.reduction)
+              ):
             new[name] = primitive(obj)
         elif type(obj) is type and obj in int_types:
             new[name] = wrap_intdtype(obj)

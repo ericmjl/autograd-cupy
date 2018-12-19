@@ -1,7 +1,8 @@
 from __future__ import absolute_import
 import cupy as cp
+import cupyx as cpx
 from autograd.extend import Box, primitive
-from autograd.cupy import cupy_wrapper as acp
+from autograd_cupy import cupy_wrapper as acp
 
 Box.__array_priority__ = 90.0
 
@@ -108,10 +109,10 @@ class SparseArrayBox(Box):
 
 
 # Register the types of sparse arrays
-SparseArrayBox.register(cp.sparse.dia.dia_matrix)
-SparseArrayBox.register(cp.sparse.csr.csr_matrix)
-SparseArrayBox.register(cp.sparse.coo.coo_matrix)
-SparseArrayBox.register(cp.sparse.csc.csc_matrix)
+SparseArrayBox.register(cpx.scipy.sparse.dia_matrix)
+SparseArrayBox.register(cpx.scipy.sparse.csr_matrix)
+SparseArrayBox.register(cpx.scipy.sparse.coo_matrix)
+SparseArrayBox.register(cpx.scipy.sparse.csc_matrix)
 
 for type_ in [float, cp.float64, cp.float32, cp.float16,
               complex, cp.complex64, cp.complex128]:
