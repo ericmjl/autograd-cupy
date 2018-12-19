@@ -16,7 +16,6 @@ cpr.seed(1)
 @pytest.mark.works
 @pytest.mark.cupy
 def test_dot():
-
     def fun(x, y):
         return cp.dot(x, y)
 
@@ -57,7 +56,6 @@ def test_dot_with_floats():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_outer():
-
     def fun(x, y):
         return cp.outer(x, y)
 
@@ -72,7 +70,6 @@ def test_outer():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_max():
-
     def fun(x):
         return cp.max(x)
 
@@ -83,7 +80,6 @@ def test_max():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_max_axis():
-
     def fun(x):
         return cp.max(x, axis=1)
 
@@ -94,7 +90,6 @@ def test_max_axis():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_max_axis_keepdims():
-
     def fun(x):
         return cp.max(x, axis=1, keepdims=True)
 
@@ -105,7 +100,6 @@ def test_max_axis_keepdims():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_min():
-
     def fun(x):
         return cp.min(x)
 
@@ -116,7 +110,6 @@ def test_min():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_min_axis():
-
     def fun(x):
         return cp.min(x, axis=1)
 
@@ -127,7 +120,6 @@ def test_min_axis():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_min_axis_keepdims():
-
     def fun(x):
         return cp.min(x, axis=1, keepdims=True)
 
@@ -138,7 +130,6 @@ def test_min_axis_keepdims():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_sum_1():
-
     def fun(x):
         return cp.sum(x)
 
@@ -149,7 +140,6 @@ def test_sum_1():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_sum_2():
-
     def fun(x):
         return cp.sum(x, axis=0)
 
@@ -160,7 +150,6 @@ def test_sum_2():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_sum_3():
-
     def fun(x):
         return cp.sum(x, axis=0, keepdims=True)
 
@@ -171,7 +160,6 @@ def test_sum_3():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_sum_with_axis_tuple():
-
     def fun(x):
         return cp.sum(x, axis=(1, 2))
 
@@ -182,7 +170,6 @@ def test_sum_with_axis_tuple():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_flipud():
-
     def fun(x):
         return cp.flipud(x)
 
@@ -193,7 +180,6 @@ def test_flipud():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_fliplr():
-
     def fun(x):
         return cp.fliplr(x)
 
@@ -204,7 +190,6 @@ def test_fliplr():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_rot90():
-
     def fun(x):
         return cp.rot90(x)
 
@@ -215,7 +200,6 @@ def test_rot90():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_cumsum_axis0():
-
     def fun(x):
         return cp.cumsum(x, axis=0)
 
@@ -226,7 +210,6 @@ def test_cumsum_axis0():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_cumsum_axis1():
-
     def fun(x):
         return cp.cumsum(x, axis=1)
 
@@ -237,7 +220,6 @@ def test_cumsum_axis1():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_cumsum_1d():
-
     def fun(x):
         return cp.cumsum(x)
 
@@ -248,7 +230,6 @@ def test_cumsum_1d():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_cumsum_no_axis():
-
     def fun(x):
         return cp.cumsum(x)
 
@@ -270,7 +251,6 @@ def test_non_cupy_sum():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_mean_1():
-
     def fun(x):
         return cp.mean(x)
 
@@ -281,7 +261,6 @@ def test_mean_1():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_mean_2():
-
     def fun(x):
         return cp.mean(x, axis=0)
 
@@ -292,7 +271,6 @@ def test_mean_2():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_mean_3():
-
     def fun(x):
         return cp.mean(x, axis=0, keepdims=True)
 
@@ -330,7 +308,7 @@ def test_index_slice():
 @pytest.mark.fails_scatter_add
 @pytest.mark.cupy
 def test_index_lists():
-    A = cpr.randn(5, 6, 4).astype('float32')
+    A = cpr.randn(5, 6, 4).astype("float32")
 
     def fun(x):
         return x[[0, 1, 2], :, :]
@@ -341,7 +319,7 @@ def test_index_lists():
 @pytest.mark.fails_scatter_add
 @pytest.mark.cupy
 def test_index_mixed():
-    A = cpr.randn(5, 6, 4).astype('float32')
+    A = cpr.randn(5, 6, 4).astype("float32")
 
     def fun(x):
         return x[3, 2:, [1, 3]]
@@ -460,8 +438,8 @@ def test_flatten_method():
 @pytest.mark.deprecated
 @pytest.mark.cupy
 def test_simple_append_list():
-    A = [1., 2., 3.]
-    b = 4.
+    A = [1.0, 2.0, 3.0]
+    b = 4.0
     check_grads(cp.append, argnum=(0, 1))(A, b)
 
 
@@ -469,8 +447,8 @@ def test_simple_append_list():
 @pytest.mark.deprecated
 @pytest.mark.cupy
 def test_simple_append_arr():
-    A = cp.array([1., 2., 3.])
-    b = 4.
+    A = cp.array([1.0, 2.0, 3.0])
+    b = 4.0
     check_grads(cp.append, argnum=(0, 1))(A, b)
 
 
@@ -478,8 +456,8 @@ def test_simple_append_arr():
 @pytest.mark.deprecated
 @pytest.mark.cupy
 def test_simple_append_list_2D():
-    A = [[1., 2., 3.], [4., 5., 6.]]
-    B = [[7., 8., 9.]]
+    A = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
+    B = [[7.0, 8.0, 9.0]]
     check_grads(cp.append, argnum=(0, 1))(A, B, axis=0)
 
 
@@ -555,7 +533,6 @@ def test_concatenate_axis_1_unnamed():
 @pytest.mark.fail_einsum
 @pytest.mark.cupy
 def test_trace():
-
     def fun(x):
         return cp.trace(x, offset=offset)
 
@@ -567,7 +544,6 @@ def test_trace():
 @pytest.mark.fail_einsum
 @pytest.mark.cupy
 def test_trace2():
-
     def fun(x):
         return cp.trace(x, offset=offset)
 
@@ -579,7 +555,6 @@ def test_trace2():
 @pytest.mark.fail_einsum
 @pytest.mark.cupy
 def test_trace_extradims():
-
     def fun(x):
         return cp.trace(x, offset=offset)
 
@@ -599,7 +574,6 @@ def test_trace_extradims():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_diag():
-
     def fun(x):
         return cp.diag(x)
 
@@ -610,7 +584,6 @@ def test_diag():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_transpose():
-
     def fun(x):
         return x.T
 
@@ -621,7 +594,6 @@ def test_transpose():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_roll():
-
     def fun(x):
         return cp.roll(x, 2, axis=1)
 
@@ -632,7 +604,6 @@ def test_roll():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_roll_no_axis():
-
     def fun(x):
         return cp.roll(x, 2, axis=1)
 
@@ -643,7 +614,6 @@ def test_roll_no_axis():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_triu():
-
     def fun(x):
         return cp.triu(x, k=2)
 
@@ -654,7 +624,6 @@ def test_triu():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_tril():
-
     def fun(x):
         return cp.tril(x, k=2)
 
@@ -665,7 +634,6 @@ def test_tril():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_clip():
-
     def fun(x):
         return cp.clip(x, a_min=0.1, a_max=1.1)
 
@@ -676,19 +644,18 @@ def test_clip():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_prod_1():
-
     def fun(x):
         return cp.prod(x)
 
-    mat = cpr.randn(2, 3) ** 2 / 10.0 + 0.1  # Gradient unstable when zeros are present.
+    mat = (
+        cpr.randn(2, 3) ** 2 / 10.0 + 0.1
+    )  # Gradient unstable when zeros are present.
     check_grads(fun)(mat)
-
 
 
 @pytest.mark.works
 @pytest.mark.cupy
 def test_prod_2():
-
     def fun(x):
         return cp.prod(x, axis=0)
 
@@ -699,7 +666,6 @@ def test_prod_2():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_prod_3():
-
     def fun(x):
         return cp.prod(x, axis=0, keepdims=True)
 
@@ -710,7 +676,6 @@ def test_prod_3():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_prod_4():
-
     def fun(x):
         return cp.prod(x)
 
@@ -731,7 +696,6 @@ def test_prod_4():
 @pytest.mark.fail_dtype_object
 @pytest.mark.cupy
 def test_1d_array():
-
     def fun(x):
         # return cp.array([x, x * 1.0, x + 2.5])
         return cp.array([x, x, x])
@@ -742,7 +706,6 @@ def test_1d_array():
 @pytest.mark.fail_dtype_object
 @pytest.mark.cupy
 def test_2d_array():
-
     def fun(x):
         return cp.array([[x, x * 1.0, x + 2.5], [x ** 2, x, x / 2.0]])
 
@@ -752,7 +715,6 @@ def test_2d_array():
 @pytest.mark.fail_dtype_object
 @pytest.mark.cupy
 def test_1d_array_fanout():
-
     def fun(x):
         A = cp.array([x, x * 1.0, x + 2.5])
         return A + A
@@ -763,7 +725,6 @@ def test_1d_array_fanout():
 @pytest.mark.fail_dtype_object
 @pytest.mark.cupy
 def test_2d_array_fanout():
-
     def fun(x):
         A = cp.array([[x, x * 1.0, x + 2.5], [x ** 2, x, x / 2.0]])
         return A + A
@@ -774,7 +735,6 @@ def test_2d_array_fanout():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_array_from_scalar():
-
     def fun(x):
         return cp.array(x)
 
@@ -786,7 +746,6 @@ def test_array_from_scalar():
 @pytest.mark.fail_dtype_object
 @pytest.mark.cupy
 def test_array_from_arrays():
-
     def fun(x):
         return cp.array([x, x])
 
@@ -798,7 +757,6 @@ def test_array_from_arrays():
 @pytest.mark.fail_dtype_object
 @pytest.mark.cupy
 def test_array_from_arrays_2():
-
     def fun(x):
         return cp.array([[2 * x, x + 1], [x, x]])
 
@@ -809,7 +767,6 @@ def test_array_from_arrays_2():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_len():
-
     def fun(x):
         assert len(x) == 3
         return x
@@ -957,7 +914,9 @@ def test_var_ddof():
     combo_check(cp.var, (0,))(
         [B, C, D], axis=[None], keepdims=[True, False], ddof=[0, 1]
     )
-    combo_check(cp.var, (0,))([C, D], axis=[None, 1], keepdims=[True, False], ddof=[2])
+    combo_check(cp.var, (0,))(
+        [C, D], axis=[None, 1], keepdims=[True, False], ddof=[2]
+    )
 
 
 @pytest.mark.works
@@ -969,13 +928,14 @@ def test_std_ddof():
     combo_check(cp.std, (0,))(
         [B, C, D], axis=[None], keepdims=[True, False], ddof=[0, 1]
     )
-    combo_check(cp.std, (0,))([C, D], axis=[None, 1], keepdims=[True, False], ddof=[2])
+    combo_check(cp.std, (0,))(
+        [C, D], axis=[None, 1], keepdims=[True, False], ddof=[2]
+    )
 
 
 @pytest.mark.works
 @pytest.mark.cupy
 def test_where():
-
     def fun(x, y):
         b = cp.where(C, x, y)
         return b
@@ -1078,7 +1038,6 @@ def test_expand_dims():
 @pytest.mark.fail_ndim
 @pytest.mark.cupy
 def test_tensordot_kwargs_by_position():
-
     def fun(x):
         return cp.tensordot(x * cp.ones((2, 2)), x * cp.ones((2, 2)), 2)
 
@@ -1156,7 +1115,6 @@ def test_cast_to_int():
 @pytest.mark.fail_array
 @pytest.mark.cupy
 def test_make_diagonal():
-
     def fun(D):
         return cp.make_diagonal(D, axis1=-1, axis2=-2)
 
@@ -1174,7 +1132,6 @@ def test_make_diagonal():
 @pytest.mark.works
 @pytest.mark.cupy
 def test_diagonal():
-
     def fun(D):
         return cp.diagonal(D, axis1=-1, axis2=-2)
 
@@ -1191,7 +1148,7 @@ def test_diagonal():
 @pytest.mark.deprecated
 @pytest.mark.cupy
 def test_nan_to_num():
-    y = cp.array([0., cp.nan, cp.inf, -cp.inf])
+    y = cp.array([0.0, cp.nan, cp.inf, -cp.inf])
     fun = lambda x: cp.sum(cp.sin(cp.nan_to_num(x + y)))
 
     x = cp.random.randn(4)
@@ -1210,7 +1167,6 @@ def test_nan_to_num():
 @pytest.mark.fail_dtype_object
 @pytest.mark.cupy
 def test_max_equal_values():
-
     def fun(x):
         return cp.max(cp.array([x, x]))
 
@@ -1221,7 +1177,6 @@ def test_max_equal_values():
 @pytest.mark.fail_dtype_object
 @pytest.mark.cupy
 def test_max_equal_values_2d():
-
     def fun(x):
         return cp.max(cp.array([[x, x], [x, 0.5]]), axis=1)
 
@@ -1233,10 +1188,10 @@ def test_max_equal_values_2d():
 @pytest.mark.fail_dtype_object
 @pytest.mark.cupy
 def test_min_3_way_equality():
-
     def fun(x):
         return cp.min(
-            cp.array([[x, x, x], [x, 0.5, 0.5], [0.5, 0.5, 0.5], [x, x, 0.5]]), axis=0
+            cp.array([[x, x, x], [x, 0.5, 0.5], [0.5, 0.5, 0.5], [x, x, 0.5]]),
+            axis=0,
         )
 
     check_grads(fun)(1.0)
@@ -1247,7 +1202,6 @@ def test_min_3_way_equality():
 @pytest.mark.fail_attribute_error
 @pytest.mark.cupy
 def test_maximum_equal_values():
-
     def fun(x):
         return cp.maximum(x, x)
 
@@ -1258,9 +1212,10 @@ def test_maximum_equal_values():
 @pytest.mark.fail_dtype_object
 @pytest.mark.cupy
 def test_maximum_equal_values_2d():
-
     def fun(x):
-        return cp.maximum(cp.array([x, x, 0.5]), cp.array([[x, 0.5, x], [x, x, 0.5]]))
+        return cp.maximum(
+            cp.array([x, x, 0.5]), cp.array([[x, 0.5, x], [x, x, 0.5]])
+        )
 
     check_grads(fun)(1.0)
     check_grads(fun)(-1.0)

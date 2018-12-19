@@ -14,39 +14,55 @@ wrap_namespace(cpla.__dict__, globals())
 # https://people.maths.ox.ac.uk/gilesm/files/NA-08-01.pdf
 
 # transpose by swapping last two dimensions
-def T(x): return acp.swapaxes(x, -1, -2)
+def T(x):
+    return acp.swapaxes(x, -1, -2)
+
 
 # add two dimensions to the end of x
-def add2d(x): return acp.reshape(x, acp.shape(x) + (1, 1))
+def add2d(x):
+    return acp.reshape(x, acp.shape(x) + (1, 1))
+
 
 defvjp(det, lambda ans, x: lambda g: add2d(g) * add2d(ans) * T(inv(x)))
 defvjp(slogdet, lambda ans, x: lambda g: add2d(g[1]) * T(inv(x)))
 
+
 def grad_inv(ans, x):
-    dot = acp.dot if ans.ndim == 2 else partial(acp.einsum, '...ij,...jk->...ik')
+    dot = (
+        acp.dot if ans.ndim == 2 else partial(acp.einsum, "...ij,...jk->...ik")
+    )
     return lambda g: -dot(dot(T(ans), g), T(ans))
+
+
 defvjp(inv, grad_inv)
 
+
 def grad_solve(argnum, ans, a, b):
-    updim = lambda x: x if x.ndim == a.ndim else x[...,None]
-    dot = acp.dot if a.ndim == 2 else partial(acp.einsum, '...ij,...jk->...ik')
+    updim = lambda x: x if x.ndim == a.ndim else x[..., None]
+    dot = acp.dot if a.ndim == 2 else partial(acp.einsum, "...ij,...jk->...ik")
     if argnum == 0:
         return lambda g: -dot(updim(solve(T(a), g)), T(updim(ans)))
     else:
         return lambda g: solve(T(a), g)
+
+
 defvjp(solve, partial(grad_solve, 0), partial(grad_solve, 1))
+
 
 def grad_norm(ans, x, ord=None, axis=None):
     def check_implemented():
         matrix_norm = (x.ndim == 2 and axis is None) or isinstance(axis, tuple)
 
         if matrix_norm:
-            if not (ord is None or ord == 'fro' or ord == 'nuc'):
-                raise NotImplementedError('Gradient of matrix norm not '
-                                          'implemented for ord={}'.format(ord))
+            if not (ord is None or ord == "fro" or ord == "nuc"):
+                raise NotImplementedError(
+                    "Gradient of matrix norm not "
+                    "implemented for ord={}".format(ord)
+                )
         elif not (ord is None or ord > 1):
-            raise NotImplementedError('Gradient of norm not '
-                                      'implemented for ord={}'.format(ord))
+            raise NotImplementedError(
+                "Gradient of norm not " "implemented for ord={}".format(ord)
+            )
 
     if axis is None:
         expand = lambda a: a
@@ -54,12 +70,13 @@ def grad_norm(ans, x, ord=None, axis=None):
         row_axis, col_axis = axis
         if row_axis > col_axis:
             row_axis = row_axis - 1
-        expand = lambda a: acp.expand_dims(acp.expand_dims(a,
-                                                   row_axis), col_axis)
+        expand = lambda a: acp.expand_dims(
+            acp.expand_dims(a, row_axis), col_axis
+        )
     else:
         expand = lambda a: acp.expand_dims(a, axis=axis)
 
-    if ord == 'nuc':
+    if ord == "nuc":
         if axis is None:
             roll = lambda a: a
             unroll = lambda a: a
@@ -68,18 +85,25 @@ def grad_norm(ans, x, ord=None, axis=None):
             if row_axis > col_axis:
                 row_axis = row_axis - 1
             # Roll matrix axes to the back
-            roll = lambda a: acp.rollaxis(acp.rollaxis(a, col_axis, a.ndim),
-                                          row_axis, a.ndim-1)
+            roll = lambda a: acp.rollaxis(
+                acp.rollaxis(a, col_axis, a.ndim), row_axis, a.ndim - 1
+            )
             # Roll matrix axes to their original position
-            unroll = lambda a: acp.rollaxis(acp.rollaxis(a, a.ndim-2, row_axis),
-                                            a.ndim-1, col_axis)
+            unroll = lambda a: acp.rollaxis(
+                acp.rollaxis(a, a.ndim - 2, row_axis), a.ndim - 1, col_axis
+            )
 
     check_implemented()
+
     def vjp(g):
-        if ord is None or ord == 2 or ord is 'fro':
+        if ord is None or ord == 2 or ord is "fro":
             return expand(g / ans) * x
-        elif ord == 'nuc':
-            dot = acp.dot if x.ndim == 2 else partial(acp.einsum, '...ij,...jk->...ik')
+        elif ord == "nuc":
+            dot = (
+                acp.dot
+                if x.ndim == 2
+                else partial(acp.einsum, "...ij,...jk->...ik")
+            )
             x_rolled = roll(x)
             u, s, vt = svd(x_rolled, full_matrices=False)
             uvt_rolled = dot(u, vt)
@@ -89,23 +113,34 @@ def grad_norm(ans, x, ord=None, axis=None):
             return g * uvt
         else:
             # see https://en.wikipedia.org/wiki/Norm_(mathematics)#p-norm
-            return expand(g / ans**(ord-1)) * x * acp.abs(x)**(ord-2)
+            return expand(g / ans ** (ord - 1)) * x * acp.abs(x) ** (ord - 2)
+
     return vjp
+
+
 defvjp(norm, grad_norm)
 
-def grad_eigh(ans, x, UPLO='L'):
+
+def grad_eigh(ans, x, UPLO="L"):
     """Gradient for eigenvalues and vectors of a symmetric matrix."""
     N = x.shape[-1]
-    w, v = ans              # Eigenvalues, eigenvectors.
-    dot = acp.dot if x.ndim == 2 else partial(acp.einsum, '...ij,...jk->...ik')
+    w, v = ans  # Eigenvalues, eigenvectors.
+    dot = acp.dot if x.ndim == 2 else partial(acp.einsum, "...ij,...jk->...ik")
+
     def vjp(g):
-        wg, vg = g          # Gradient w.r.t. eigenvalues, eigenvectors.
+        wg, vg = g  # Gradient w.r.t. eigenvalues, eigenvectors.
         w_repeated = acp.repeat(w[..., acp.newaxis], N, axis=-1)
         off_diag = acp.ones((N, N)) - acp.eye(N)
         F = off_diag / (T(w_repeated) - w_repeated + acp.eye(N))
-        return dot(v * wg[..., acp.newaxis, :] + dot(v, F * dot(T(v), vg)), T(v))
+        return dot(
+            v * wg[..., acp.newaxis, :] + dot(v, F * dot(T(v), vg)), T(v)
+        )
+
     return vjp
+
+
 defvjp(eigh, grad_eigh)
+
 
 def grad_cholesky(L, A):
     # Based on Iain Murray's note http://arxiv.org/abs/1602.07527
@@ -113,21 +148,30 @@ def grad_cholesky(L, A):
     # dimensions, so we just call a generic LU solve instead of directly using
     # backsubstitution (also, we factor twice...)
     solve_trans = lambda a, b: solve(T(a), b)
-    phi = lambda X: acp.tril(X) / (1. + acp.eye(X.shape[-1]))
+    phi = lambda X: acp.tril(X) / (1.0 + acp.eye(X.shape[-1]))
+
     def conjugate_solve(L, X):
         # X -> L^{-T} X L^{-1}
         return solve_trans(L, T(solve_trans(L, T(X))))
 
     def vjp(g):
-        S = conjugate_solve(L, phi(acp.einsum('...ki,...kj->...ij', L, g)))
-        return (S + T(S)) / 2.
+        S = conjugate_solve(L, phi(acp.einsum("...ki,...kj->...ij", L, g)))
+        return (S + T(S)) / 2.0
+
     return vjp
+
+
 defvjp(cholesky, grad_cholesky)
+
 
 def grad_svd(usv_, a, full_matrices=True, compute_uv=True):
     def vjp(g):
         usv = usv_
-        dot = acp.dot if a.ndim == 2 else partial(acp.einsum, '...ij,...jk->...ik')
+        dot = (
+            acp.dot
+            if a.ndim == 2
+            else partial(acp.einsum, "...ij,...jk->...ik")
+        )
 
         if not compute_uv:
             s = usv
@@ -141,7 +185,8 @@ def grad_svd(usv_, a, full_matrices=True, compute_uv=True):
 
         elif full_matrices:
             raise NotImplementedError(
-                "Gradient of svd not implemented for full_matrices=True")
+                "Gradient of svd not implemented for full_matrices=True"
+            )
 
         else:
             u = usv[0]
@@ -152,9 +197,14 @@ def grad_svd(usv_, a, full_matrices=True, compute_uv=True):
 
             k = acp.min((m, n))
             # broadcastable identity array with shape (1, 1, ..., 1, k, k)
-            i = acp.reshape(acp.eye(k), acp.concatenate((acp.ones(a.ndim - 2, dtype=int), (k, k))))
+            i = acp.reshape(
+                acp.eye(k),
+                acp.concatenate((acp.ones(a.ndim - 2, dtype=int), (k, k))),
+            )
 
-            f = 1 / (s[..., acp.newaxis, :]**2 - s[..., :, acp.newaxis]**2 + i)
+            f = 1 / (
+                s[..., acp.newaxis, :] ** 2 - s[..., :, acp.newaxis] ** 2 + i
+            )
 
             if m < n:
                 gu = g[0]
@@ -164,8 +214,10 @@ def grad_svd(usv_, a, full_matrices=True, compute_uv=True):
                 utgu = dot(T(u), gu)
                 vtgv = dot(T(v), gv)
 
-                i_minus_vvt = (acp.reshape(acp.eye(n), acp.concatenate((acp.ones(a.ndim - 2, dtype=int), (n, n)))) -
-                                dot(v, T(v)))
+                i_minus_vvt = acp.reshape(
+                    acp.eye(n),
+                    acp.concatenate((acp.ones(a.ndim - 2, dtype=int), (n, n))),
+                ) - dot(v, T(v))
 
                 t1 = (f * (utgu - T(utgu))) * s[..., acp.newaxis, :]
                 t1 = t1 + i * gs[..., :, acp.newaxis]
@@ -173,7 +225,9 @@ def grad_svd(usv_, a, full_matrices=True, compute_uv=True):
 
                 t1 = dot(dot(u, t1), T(v))
 
-                t1 = t1 + dot(dot(u / s[..., acp.newaxis, :], T(gv)), i_minus_vvt)
+                t1 = t1 + dot(
+                    dot(u / s[..., acp.newaxis, :], T(gv)), i_minus_vvt
+                )
 
                 return t1
 
@@ -201,8 +255,10 @@ def grad_svd(usv_, a, full_matrices=True, compute_uv=True):
                 utgu = dot(T(u), gu)
                 vtgv = dot(T(v), gv)
 
-                i_minus_uut = (acp.reshape(acp.eye(m), acp.concatenate((acp.ones(a.ndim - 2, dtype=int), (m, m)))) -
-                                dot(u, T(u)))
+                i_minus_uut = acp.reshape(
+                    acp.eye(m),
+                    acp.concatenate((acp.ones(a.ndim - 2, dtype=int), (m, m))),
+                ) - dot(u, T(u))
 
                 t1 = (f * (utgu - T(utgu))) * s[..., acp.newaxis, :]
                 t1 = t1 + i * gs[..., :, acp.newaxis]
@@ -210,8 +266,13 @@ def grad_svd(usv_, a, full_matrices=True, compute_uv=True):
 
                 t1 = dot(dot(u, t1), T(v))
 
-                t1 = t1 + dot(i_minus_uut, dot(gu, T(v) / s[..., :, acp.newaxis]))
+                t1 = t1 + dot(
+                    i_minus_uut, dot(gu, T(v) / s[..., :, acp.newaxis])
+                )
 
                 return t1
+
     return vjp
+
+
 defvjp(svd, grad_svd)

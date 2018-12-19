@@ -4,7 +4,6 @@ from autograd.extend import VSpace
 
 
 class ArrayVSpace(VSpace):
-
     def __init__(self, value):
         value = cp.array(value, copy=False)
         self.shape = value.shape
@@ -45,10 +44,8 @@ class ComplexArrayVSpace(ArrayVSpace):
         return cp.prod(self.shape) * 2
 
     def ones(self):
-        return (
-            cp.ones(self.shape, dtype=self.dtype)
-            + 1.0j
-            * cp.ones(self.shape, dtype=self.dtype)
+        return cp.ones(self.shape, dtype=self.dtype) + 1.0j * cp.ones(
+            self.shape, dtype=self.dtype
         )
 
     def standard_basis(self):
@@ -59,11 +56,9 @@ class ComplexArrayVSpace(ArrayVSpace):
                 yield vect
 
     def randn(self):
-        return (
-            cp.array(cp.random.randn(*self.shape)).astype(self.dtype)
-            + 1.0j
-            * cp.array(cp.random.randn(*self.shape)).astype(self.dtype)
-        )
+        return cp.array(cp.random.randn(*self.shape)).astype(
+            self.dtype
+        ) + 1.0j * cp.array(cp.random.randn(*self.shape)).astype(self.dtype)
 
     def _inner_prod(self, x, y):
         return cp.real(cp.dot(cp.conj(cp.ravel(x)), cp.ravel(y)))

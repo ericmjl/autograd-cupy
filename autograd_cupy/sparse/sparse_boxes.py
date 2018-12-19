@@ -13,7 +13,8 @@ class SparseArrayBox(Box):
     __array_priority__ = 110.0
 
     @primitive
-    def __getitem__(A, idx): return A[idx]
+    def __getitem__(A, idx):
+        return A[idx]
 
     # Constants w.r.t float data just pass though
     shape = property(lambda self: self._value.shape)
@@ -114,8 +115,15 @@ SparseArrayBox.register(cpx.scipy.sparse.csr_matrix)
 SparseArrayBox.register(cpx.scipy.sparse.coo_matrix)
 SparseArrayBox.register(cpx.scipy.sparse.csc_matrix)
 
-for type_ in [float, cp.float64, cp.float32, cp.float16,
-              complex, cp.complex64, cp.complex128]:
+for type_ in [
+    float,
+    cp.float64,
+    cp.float32,
+    cp.float16,
+    complex,
+    cp.complex64,
+    cp.complex128,
+]:
     SparseArrayBox.register(type_)
 
 # These numpy.ndarray methods are just refs to an equivalent numpy function

@@ -11,7 +11,12 @@ from .cupy_vjps import (
     nograd_functions,
 )
 from autograd.extend import (
-    defjvp, defjvp_argnum, def_linear, vspace, JVPNode, register_notrace
+    defjvp,
+    defjvp_argnum,
+    def_linear,
+    vspace,
+    JVPNode,
+    register_notrace,
 )
 from autograd.util import func
 from .cupy_boxes import ArrayBox
@@ -24,21 +29,15 @@ defjvp(untake, "same")
 
 defjvp_argnum(
     acp.array_from_args,
-    lambda argnum,
-    g,
-    ans,
-    args,
-    kwargs: untake(g, argnum - 2, vspace(ans)),
+    lambda argnum, g, ans, args, kwargs: untake(g, argnum - 2, vspace(ans)),
 )
 defjvp(
     acp._array_from_scalar_or_array,
     None,
     None,
-    lambda g,
-    ans,
-    args,
-    kwargs,
-    _: acp._array_from_scalar_or_array(args, kwargs, g),
+    lambda g, ans, args, kwargs, _: acp._array_from_scalar_or_array(
+        args, kwargs, g
+    ),
 )
 
 # ----- Functions that are constant w.r.t. continuous inputs -----
@@ -50,137 +49,65 @@ def_linear(acp.multiply)
 # ----- Binary ufuncs -----
 defjvp(
     acp.add,
-    lambda g,
-    ans,
-    x,
-    y: broadcast(g, ans),
-    lambda g,
-    ans,
-    x,
-    y: broadcast(g, ans),
+    lambda g, ans, x, y: broadcast(g, ans),
+    lambda g, ans, x, y: broadcast(g, ans),
 )
 defjvp(
     acp.subtract,
-    lambda g,
-    ans,
-    x,
-    y: broadcast(g, ans),
-    lambda g,
-    ans,
-    x,
-    y: broadcast(-g, ans),
+    lambda g, ans, x, y: broadcast(g, ans),
+    lambda g, ans, x, y: broadcast(-g, ans),
 )
 defjvp(acp.divide, "same", lambda g, ans, x, y: -g * x / y ** 2)
 defjvp(
     acp.maximum,
-    lambda g,
-    ans,
-    x,
-    y: g * balanced_eq(x, ans, y),
-    lambda g,
-    ans,
-    x,
-    y: g * balanced_eq(y, ans, x)
+    lambda g, ans, x, y: g * balanced_eq(x, ans, y),
+    lambda g, ans, x, y: g * balanced_eq(y, ans, x),
 )
 defjvp(
     acp.minimum,
-    lambda g,
-    ans,
-    x,
-    y: g * balanced_eq(x, ans, y),
-    lambda g,
-    ans,
-    x,
-    y: g * balanced_eq(y, ans, x)
+    lambda g, ans, x, y: g * balanced_eq(x, ans, y),
+    lambda g, ans, x, y: g * balanced_eq(y, ans, x),
 )
 defjvp(
     acp.fmax,
-    lambda g,
-    ans,
-    x,
-    y: g * balanced_eq(x, ans, y),
-    lambda g,
-    ans,
-    x,
-    y: g * balanced_eq(y, ans, x)
+    lambda g, ans, x, y: g * balanced_eq(x, ans, y),
+    lambda g, ans, x, y: g * balanced_eq(y, ans, x),
 )
 defjvp(
     acp.fmin,
-    lambda g,
-    ans,
-    x,
-    y: g * balanced_eq(x, ans, y),
-    lambda g,
-    ans,
-    x,
-    y: g * balanced_eq(y, ans, x)
+    lambda g, ans, x, y: g * balanced_eq(x, ans, y),
+    lambda g, ans, x, y: g * balanced_eq(y, ans, x),
 )
 defjvp(
     acp.logaddexp,
-    lambda g,
-    ans,
-    x,
-    y: g * acp.exp(x - ans),
-    lambda g,
-    ans,
-    x,
-    y: g * acp.exp(y - ans)
+    lambda g, ans, x, y: g * acp.exp(x - ans),
+    lambda g, ans, x, y: g * acp.exp(y - ans),
 )
 defjvp(
     acp.logaddexp2,
-    lambda g,
-    ans,
-    x,
-    y: g * 2 ** (x - ans),
-    lambda g,
-    ans,
-    x,
-    y: g * 2 ** (y - ans)
+    lambda g, ans, x, y: g * 2 ** (x - ans),
+    lambda g, ans, x, y: g * 2 ** (y - ans),
 )
 defjvp(acp.true_divide, "same", lambda g, ans, x, y: -g * x / y ** 2)
 defjvp(
     acp.mod,
-    lambda g,
-    ans,
-    x,
-    y: broadcast(g, ans),
-    lambda g,
-    ans,
-    x,
-    y: -g * acp.floor(x / y)
+    lambda g, ans, x, y: broadcast(g, ans),
+    lambda g, ans, x, y: -g * acp.floor(x / y),
 )
 defjvp(
     acp.remainder,
-    lambda g,
-    ans,
-    x,
-    y: broadcast(g, ans),
-    lambda g,
-    ans,
-    x,
-    y: -g * acp.floor(x / y)
+    lambda g, ans, x, y: broadcast(g, ans),
+    lambda g, ans, x, y: -g * acp.floor(x / y),
 )
 defjvp(
     acp.power,
-    lambda g,
-    ans,
-    x,
-    y: g * y * x ** acp.where(y, y - 1, 1.),
-    lambda g,
-    ans,
-    x,
-    y: g * acp.log(replace_zero(x, 1.)) * x ** y
+    lambda g, ans, x, y: g * y * x ** acp.where(y, y - 1, 1.0),
+    lambda g, ans, x, y: g * acp.log(replace_zero(x, 1.0)) * x ** y,
 )
 defjvp(
     acp.arctan2,
-    lambda g,
-    ans,
-    x,
-    y: g * y / (x ** 2 + y ** 2),
-    lambda g,
-    ans,
-    x,
-    y: g * -x / (x ** 2 + y ** 2)
+    lambda g, ans, x, y: g * y / (x ** 2 + y ** 2),
+    lambda g, ans, x, y: g * -x / (x ** 2 + y ** 2),
 )
 
 # ----- Simple grads (linear) -----
@@ -207,21 +134,20 @@ defjvp(acp.fliplr, "same")
 defjvp(acp.rot90, "same")
 defjvp(acp.trace, "same")
 defjvp(acp.full, "same", argnums=(1,))
-defjvp(acp.triu,          'same')
-defjvp(acp.tril,          'same')
+defjvp(acp.triu, "same")
+defjvp(acp.tril, "same")
 defjvp(acp.swapaxes, "same")
 defjvp(acp.rollaxis, "same")
-defjvp(acp.moveaxis,      'same')
+defjvp(acp.moveaxis, "same")
 # def_linear(acp.cross)
 
 # ----- Simple grads -----
 defjvp(
     acp.abs,
-    lambda g,
-    ans,
-    x: acp.real(g * replace_zero(acp.conj(x), 0.)) / replace_zero(ans, 1.),
+    lambda g, ans, x: acp.real(g * replace_zero(acp.conj(x), 0.0))
+    / replace_zero(ans, 1.0),
 )
-# defjvp(acp.fabs,        lambda g, ans, x : acp.sign(x) * g)  # fabs doesn't take complex 
+# defjvp(acp.fabs,        lambda g, ans, x : acp.sign(x) * g)  # fabs doesn't take complex
 # numbers.
 defjvp(acp.absolute, lambda g, ans, x: acp.real(g * acp.conj(x)) / ans)
 defjvp(acp.reciprocal, lambda g, ans, x: -g / x ** 2)
@@ -246,15 +172,12 @@ defjvp(acp.arccosh, lambda g, ans, x: g / acp.sqrt(x ** 2 - 1))
 defjvp(acp.arctanh, lambda g, ans, x: g / (1 - x ** 2))
 defjvp(acp.square, lambda g, ans, x: g * 2 * x)
 defjvp(acp.sqrt, lambda g, ans, x: g * 0.5 * x ** -0.5)
-# defjvp(acp.sinc,        lambda g, ans, x : g * (acp.cos(acp.pi*x)*acp.pi*x - 
+# defjvp(acp.sinc,        lambda g, ans, x : g * (acp.cos(acp.pi*x)*acp.pi*x -
 # acp.sin(acp.pi*x))/(acp.pi*x**2))
 defjvp(
     acp.clip,
-    lambda g,
-    ans,
-    x,
-    a_min,
-    a_max: g * acp.logical_and(ans != a_min, ans != a_max)
+    lambda g, ans, x, a_min, a_max: g
+    * acp.logical_and(ans != a_min, ans != a_max),
 )
 
 # defjvp(acp.real_if_close, lambda g, ans, x : match_complex(ans, g))
@@ -263,23 +186,15 @@ defjvp(acp.imag, lambda g, ans, x: match_complex(ans, -1j * g))
 defjvp(acp.conj, lambda g, ans, x: acp.conj(g))
 defjvp(
     acp.angle,
-    lambda g,
-    ans,
-    x: match_complex(ans, g * acp.conj(x * 1j) / acp.abs(x) ** 2)
+    lambda g, ans, x: match_complex(
+        ans, g * acp.conj(x * 1j) / acp.abs(x) ** 2
+    ),
 )
 defjvp(
     acp.where,
     None,
-    lambda g,
-    ans,
-    c,
-    x=None,
-    y=None: acp.where(c, g, acp.zeros(g.shape)),
-    lambda g,
-    ans,
-    c,
-    x=None,
-    y=None: acp.where(c, acp.zeros(g.shape), g),
+    lambda g, ans, c, x=None, y=None: acp.where(c, g, acp.zeros(g.shape)),
+    lambda g, ans, c, x=None, y=None: acp.where(c, acp.zeros(g.shape), g),
 )
 
 # ----- Trickier grads -----
@@ -288,19 +203,21 @@ defjvp(acp.kron, "same", "same")
 defjvp(acp.repeat, "same")
 defjvp(acp.tile, "same")
 defjvp(acp.transpose, "same")
-defjvp(acp.sum,       'same')
+defjvp(acp.sum, "same")
 defjvp(acp.mean, "same")
-defjvp(acp.prod, lambda g, ans, x, axis=None, keepdims=False: ans * acp.sum(g / x, axis=axis, keepdims=keepdims))
+defjvp(
+    acp.prod,
+    lambda g, ans, x, axis=None, keepdims=False: ans
+    * acp.sum(g / x, axis=axis, keepdims=keepdims),
+)
 defjvp(
     acp.linspace,
-    lambda g,
-    ans,
-    start,
-    stop, *args, **kwargs: acp.linspace(g, 0, *args, **kwargs),
-    lambda g,
-    ans,
-    start,
-    stop, *args, **kwargs: acp.linspace(0, g, *args, **kwargs)
+    lambda g, ans, start, stop, *args, **kwargs: acp.linspace(
+        g, 0, *args, **kwargs
+    ),
+    lambda g, ans, start, stop, *args, **kwargs: acp.linspace(
+        0, g, *args, **kwargs
+    ),
 )
 
 
@@ -335,10 +252,9 @@ def forward_grad_np_std(g, ans, x, axis=None, ddof=0, keepdims=False):
         return acp.zeros_like(ans)
 
     x_minus_mean = acp.conj(x - acp.mean(x, axis=axis, keepdims=True))
-    return (
-        acp.sum(acp.real(g * x_minus_mean), axis=axis, keepdims=keepdims)
-        / ((num_reps - ddof) * ans)
-    )
+    return acp.sum(
+        acp.real(g * x_minus_mean), axis=axis, keepdims=keepdims
+    ) / ((num_reps - ddof) * ans)
 
 
 defjvp(acp.std, forward_grad_np_std)
@@ -355,10 +271,9 @@ def fwd_grad_chooser(g, ans, x, axis=None, keepdims=False):
             for ax in sorted(axis):
                 ans = acp.expand_dims(ans, ax)
     chosen_locations = x == ans
-    return (
-        acp.sum((g * chosen_locations), axis=axis, keepdims=keepdims)
-        / acp.sum(chosen_locations, axis=axis, keepdims=keepdims)
-    )
+    return acp.sum(
+        (g * chosen_locations), axis=axis, keepdims=keepdims
+    ) / acp.sum(chosen_locations, axis=axis, keepdims=keepdims)
 
 
 defjvp(acp.max, fwd_grad_chooser)
@@ -403,7 +318,9 @@ defjvp(acp.sort, fwd_grad_sort)
 defjvp(acp.msort, lambda g, ans, x: fwd_grad_sort(g, ans, x, axis=0))
 
 
-def fwd_grad_partition(g, ans, x, kth, axis=-1, kind="introselect", order=None):
+def fwd_grad_partition(
+    g, ans, x, kth, axis=-1, kind="introselect", order=None
+):
     partition_perm = acp.argpartition(x, kth, axis, kind, order)
     return g[partition_perm]
 
@@ -412,7 +329,6 @@ defjvp(acp.partition, fwd_grad_partition)
 
 
 def atleast_jvpmaker(fun):
-
     def jvp(g, ans, *arys):
         if len(arys) > 1:
             raise NotImplementedError("Can't handle multiple arguments yet.")
@@ -432,7 +348,9 @@ def_linear(acp.einsum)
 
 
 def broadcast(x, target):
-    target_shape, target_ndim, target_dtype, target_iscomplex = acp.metadata(target)
+    target_shape, target_ndim, target_dtype, target_iscomplex = acp.metadata(
+        target
+    )
     while acp.ndim(x) < target_ndim:
         x = acp.expand_dims(x, 0)
     for axis, size in enumerate(x.shape):

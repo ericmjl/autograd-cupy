@@ -41,5 +41,5 @@ def _dot_vjp_1(g, ans, sparse, dense):
         return sparse[:, None] * g
     return anp.dot(sparse.T, g)
 
-defvjp(dot, _dot_vjp_0, None)
 
+defvjp(dot, _dot_vjp_0, None)

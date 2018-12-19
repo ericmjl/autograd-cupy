@@ -2,8 +2,8 @@ import cupy as cp
 import numpy as np
 from autograd.extend import VSpace
 
-class SparseArrayVSpace(VSpace):
 
+class SparseArrayVSpace(VSpace):
     def __init__(self, value):
         self.t = type(value)
         self.value = self.t(value)

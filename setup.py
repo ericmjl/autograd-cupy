@@ -11,7 +11,8 @@ def read(fname):
     """
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-reqs = ['autograd>=1.2', 'cupy>=4.0']
+
+reqs = ["autograd>=1.2", "cupy>=4.0"]
 
 
 setup(
@@ -24,8 +25,7 @@ setup(
     keywords="machine learning, deep learning",
     url="http://github.com/ericmjl/autograd-cupy",
     packages=find_packages(),
-    package_data={'': ['README.md', 'LICENSE']},
+    package_data={"": ["README.md", "LICENSE"]},
     install_requires=reqs,
-    long_description=read('README.md'),
+    long_description=read("README.md"),
 )
-

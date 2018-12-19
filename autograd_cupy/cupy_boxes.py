@@ -104,15 +104,16 @@ class ArrayBox(Box):
 
 
 ArrayBox.register(cp.ndarray)
-types = [int,
-         float,
-         cp.float64,
-         cp.float32,
-         cp.float16,
-         complex,
-         cp.complex64,
-         cp.complex128
-         ]
+types = [
+    int,
+    float,
+    cp.float64,
+    cp.float32,
+    cp.float16,
+    complex,
+    cp.complex64,
+    cp.complex128,
+]
 for type_ in types:
     ArrayBox.register(type_)
 

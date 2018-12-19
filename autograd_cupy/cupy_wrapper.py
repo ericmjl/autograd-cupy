@@ -48,7 +48,6 @@ notrace_functions = [
 
 
 def wrap_intdtype(cls):
-
     class IntdtypeSubclass(cls):
         __new__ = notrace_primitive(cls.__new__)
 
@@ -60,8 +59,15 @@ def wrap_namespace(old, new):
     Wraps namespace of array library.
     """
     unchanged_types = {float, int, type(None), type}
-    int_types = {_cp.int, _cp.int8, _cp.int16, _cp.int32, _cp.int64, _cp.integer}
-    function_types = {_cp.ufunc, types.FunctionType, types.BuiltinFunctionType,}
+    int_types = {
+        _cp.int,
+        _cp.int8,
+        _cp.int16,
+        _cp.int32,
+        _cp.int64,
+        _cp.integer,
+    }
+    function_types = {_cp.ufunc, types.FunctionType, types.BuiltinFunctionType}
     for name, obj in old.items():
         if obj in notrace_functions:
             new[name] = notrace_primitive(obj)
@@ -70,10 +76,11 @@ def wrap_namespace(old, new):
         #
         #     isinstance(obj, _cp.ufunc)
         #
-        elif (type(obj) in function_types
-              or isinstance(obj, _cp.ufunc)
-              #or isinstance(obj, _cp.core.fusion.reduction)
-              ):
+        elif (
+            type(obj) in function_types
+            or isinstance(obj, _cp.ufunc)
+            # or isinstance(obj, _cp.core.fusion.reduction)
+        ):
             new[name] = primitive(obj)
         elif type(obj) is type and obj in int_types:
             new[name] = wrap_intdtype(obj)
@@ -90,10 +97,14 @@ def concatenate_args(axis, *args):
     return _cp.concatenate(args, axis).view(ndarray)
 
 
-concatenate = lambda arr_list, axis=0: concatenate_args(axis, *arr_list)  # noqa
+concatenate = lambda arr_list, axis=0: concatenate_args(
+    axis, *arr_list
+)  # noqa
 
 # Expecting an error here: vstack won't work!
-vstack = row_stack = lambda tup: concatenate([atleast_2d(_m) for _m in tup], axis=0)
+vstack = row_stack = lambda tup: concatenate(
+    [atleast_2d(_m) for _m in tup], axis=0
+)
 
 
 def hstack(tup):
@@ -129,8 +140,9 @@ def wrap_if_boxes_inside(raw_array, slow_op_name=None):
                 "{0} is slow for array inputs. "
                 "np.concatenate() is faster.".format(slow_op_name)
             )
-        return (array_from_args((), {}, *raw_array.ravel())
-                .reshape(raw_array.shape))
+        return array_from_args((), {}, *raw_array.ravel()).reshape(
+            raw_array.shape
+        )
 
     else:
         return raw_array
@@ -169,7 +181,7 @@ def stack(arrays, axis=0):
     if not -result_ndim <= axis < result_ndim:
         raise IndexError(
             "axis {0} out of bounds [-{1}, {1})".format(axis, result_ndim)
-            )
+        )
 
     if axis < 0:
         axis += result_ndim
@@ -190,8 +202,7 @@ def append(arr, values, axis=None):
 
 
 # ----- Enable functions called using [] ----
-class r_class():
-
+class r_class:
     def __getitem__(self, args):
         raw_array = _cp.r_[args]
         return wrap_if_boxes_inside(raw_array, slow_op_name="r_")
@@ -200,8 +211,7 @@ class r_class():
 r_ = r_class()
 
 
-class c_class():
-
+class c_class:
     def __getitem__(self, args):
         raw_array = _cp.c_[args]
         return wrap_if_boxes_inside(raw_array, slow_op_name="c_")
@@ -232,12 +242,7 @@ def make_diagonal(D, offset=0, axis1=0, axis2=1):
 
 @notrace_primitive
 def metadata(A):
-    return (
-        A.shape,
-        A.ndim,
-        A.dtype,
-        _cp.iscomplexobj(A)
-        )
+    return (A.shape, A.ndim, A.dtype, _cp.iscomplexobj(A))
 
 
 # Commented out because this is unsupported in CuPy.

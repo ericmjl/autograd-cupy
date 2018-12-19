@@ -5,6 +5,7 @@ from autograd import grad
 import pdb
 import numpy as np
 
+
 @pytest.mark.integration
 @pytest.mark.cupy
 def test_sin():
@@ -23,6 +24,7 @@ def test_sin():
 @pytest.mark.cupy
 def test_higher_order_derivatives():
     a = cp.arange(10)
+
     def f(x):
         return cp.sin(x)
 
@@ -58,7 +60,7 @@ def test_gradient_descent():
     # x = cp.array([[1,2,3,4,5,6,7,8]])
     # y = cp.array([[-1,-1,-1,-1,1,1,1,1]])
     x = cp.random.random(size=(10, 2))
-    w_truth = cp.random.random(size=(2,1))
+    w_truth = cp.random.random(size=(2, 1))
     y = cp.dot(x, w_truth)
 
     # def model(w, x):

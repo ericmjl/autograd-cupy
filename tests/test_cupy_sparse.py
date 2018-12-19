@@ -18,9 +18,9 @@ def eye():
 @pytest.mark.cupy_sparse
 def test_sparse_coo_matrix(eye):
     """This just has to not error out."""
-    data = cp.array([1, 2, 3]).astype('float32')
-    rows = cp.array([1, 2, 3]).astype('float32')
-    cols = cp.array([1, 3, 4]).astype('float32')
+    data = cp.array([1, 2, 3]).astype("float32")
+    rows = cp.array([1, 2, 3]).astype("float32")
+    cols = cp.array([1, 3, 4]).astype("float32")
     print(eye.shape)
 
 
