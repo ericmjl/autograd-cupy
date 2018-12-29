@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from future.utils import string_types
 from functools import partial
+import cupyx as ocpx
 import cupy as ocp
 from autograd.util import func
 from . import cupy_wrapper as acp
@@ -1028,7 +1029,7 @@ def untake(x, idx, vs):
         # according to https://docs-cupy.chainer.org/en/stable/reference/ufunc.html?highlight=ufunc.at,
         # scatter_add is the correct function to use.
         # TODO: PR into cupy codebase the ability to use scatter_add with float64?
-        ocp.scatter_add(A, idx, x)
+        ocpx.scatter_add(A, idx, x)
         return A
 
     return SparseObject(vs, mut_add)
